@@ -1,0 +1,140 @@
+// ... (todo el contenido existente de colors.ts)
+
+export default colors;
+
+// Propuestas para un nuevo tema VERDE que se diferencie más de 'success'
+// Para usar una de estas, descomenta el bloque, completa las definiciones
+// (secondary, tertiary, y sus variantes Dark), y añade la nueva clave de tema
+// (ej. "greenTeal") al tipo ColorScheme en lib/theme/ColorToken.ts.
+
+/*
+// Propuesta 1: Verde Azulado/Cerceta Oscuro (Teal)
+// ================================================
+// Añadir 'greenTeal' y 'greenTealDark' a la exportación de 'themes'
+// y 'greenTeal' a ColorScheme en ColorToken.ts
+
+const greenTealThemeColors = {
+  primary: {
+    pure: "#0D7A73",      // Cerceta oscuro y rico
+    pureShade: "#095751",  // Más oscuro
+    pureDark: "#095751",   // Legado
+    text: "#042A27",      // Texto oscuro para fondo claro
+    contrastText: "#E0F7F6", // Texto claro para botones oscuros/primarios
+    textShade: "#06403B",  // Shade de texto oscuro
+    textDark: "#06403B",   // Legado
+    bg: "#E0F7F6",        // Fondo claro con tinte cerceta
+    bgShade: "#B3E7E4",   // Shade de fondo claro
+    bgDark: "#B3E7E4",    // Legado
+  },
+  secondary: { // Ejemplo, ajustar valores
+    pure: "#3D8F8A",      // Cerceta más apagado
+    pureShade: "#2C6A66",
+    pureDark: "#2C6A66",
+    text: "#133C39",
+    contrastText: "#D6F0EE",
+    textShade: "#1E5753",
+    textDark: "#1E5753",
+    bg: "#EBF5F4",
+    bgShade: "#C7E0DE",
+    bgDark: "#C7E0DE",
+  },
+  tertiary: { // Ejemplo, ajustar valores
+    pure: "#5DB0AA",      // Cerceta aún más claro
+    pureShade: "#42807B",
+    pureDark: "#42807B",
+    text: "#205B57",
+    contrastText: "#DDF3F1",
+    textShade: "#2F6F6A",
+    textDark: "#2F6F6A",
+    bg: "#EFF7F6",
+    bgShade: "#D3E7E5",
+    bgDark: "#D3E7E5",
+  },
+} as ThemeColors;
+
+const greenTealDarkThemeColors = {
+  primary: {
+    pure: "#1EBEB2",      // Cerceta más brillante para modo oscuro
+    pureShade: "#0D7A73",  // Corresponde al pure del modo claro
+    pureDark: "#0D7A73",   // Legado
+    text: "#A1E0DB",      // Texto claro tintado para fondo oscuro
+    contrastText: "#042A27", // Texto oscuro para botones cerceta brillantes
+    textShade: "#7FD1CA",  // Shade de texto claro
+    textDark: "#7FD1CA",   // Legado
+    bg: "#042A27",        // Fondo muy oscuro con base cerceta
+    bgShade: "#021A17",   // Shade de fondo oscuro
+    bgDark: "#021A17",    // Legado
+  },
+  secondary: { // Ejemplo, ajustar valores
+    pure: "#5DB0AA", 
+    pureShade: "#3D8F8A",
+    pureDark: "#3D8F8A",
+    text: "#A1D9D5",
+    contrastText: "#0A2C2A",
+    textShade: "#8CCBC6",
+    textDark: "#8CCBC6",
+    bg: "#0E3B38",
+    bgShade: "#072523",
+    bgDark: "#072523",
+  },
+  tertiary: { // Ejemplo, ajustar valores
+    pure: "#7BC4BF", 
+    pureShade: "#5DB0AA",
+    pureDark: "#5DB0AA",
+    text: "#AEDCDF",
+    contrastText: "#103835",
+    textShade: "#9CD3CF",
+    textDark: "#9CD3CF",
+    bg: "#134541",
+    bgShade: "#0A2E2B",
+    bgDark: "#0A2E2B",
+  },
+} as ThemeColors;
+
+// Para activarlo, añadirías a themes:
+// greenTeal: greenTealThemeColors,
+// greenTealDark: greenTealDarkThemeColors,
+*/
+
+/*
+// Propuesta 2: Verde Oliva
+// =======================
+// Añadir 'greenOlive' y 'greenOliveDark' a la exportación de 'themes'
+// y 'greenOlive' a ColorScheme en ColorToken.ts
+
+const greenOliveThemeColors = {
+  primary: {
+    pure: "#6B7F00",      // Verde oliva
+    pureShade: "#4D5C00",  // Más oscuro
+    pureDark: "#4D5C00",   // Legado
+    text: "#262E00",      // Texto oscuro para fondo claro
+    contrastText: "#E6EDC1", // Texto claro para botones oliva
+    textShade: "#3A4500",  // Shade de texto oscuro
+    textDark: "#3A4500",   // Legado
+    bg: "#F3F7E0",        // Fondo claro con tinte oliva
+    bgShade: "#DCE3B3",   // Shade de fondo claro
+    bgDark: "#DCE3B3",    // Legado
+  },
+  // ... definir secondary y tertiary para greenOlive
+} as ThemeColors;
+
+const greenOliveDarkThemeColors = {
+  primary: {
+    pure: "#A8C800",      // Oliva más brillante para modo oscuro
+    pureShade: "#6B7F00",  // Corresponde al pure del modo claro
+    pureDark: "#6B7F00",   // Legado
+    text: "#D7E3A0",      // Texto claro tintado para fondo oscuro
+    contrastText: "#262E00", // Texto oscuro para botones oliva brillantes
+    textShade: "#C5D687",  // Shade de texto claro
+    textDark: "#C5D687",   // Legado
+    bg: "#262E00",        // Fondo muy oscuro con base oliva
+    bgShade: "#1A1E00",   // Shade de fondo oscuro
+    bgDark: "#1A1E00",    // Legado
+  },
+  // ... definir secondaryDark y tertiaryDark para greenOliveDark
+} as ThemeColors;
+
+// Para activarlo, añadirías a themes:
+// greenOlive: greenOliveThemeColors,
+// greenOliveDark: greenOliveDarkThemeColors,
+*/
