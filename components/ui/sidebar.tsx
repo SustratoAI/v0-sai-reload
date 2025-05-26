@@ -3,7 +3,36 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
-import { PanelLeft } from "lucide-react"
+import { PanelLeft, UserPlus, ShieldCheck, Layers, LayoutGrid, Building2, Users, Quote } from "lucide-react"
+
+// Menú de Datos Maestros (debe coincidir con layout.tsx)
+export const datosMaestrosNavItems = [
+  {
+    title: "Instituciones",
+    href: "/datos-maestros/instituciones",
+    icon: Building2, // Usa el ícono más similar
+  },
+  {
+    title: "Entrevistados",
+    href: "/datos-maestros/entrevistados",
+    icon: Users, // Usa el ícono más similar
+  },
+  {
+    title: "Miembros",
+    href: "/datos-maestros/miembros",
+    icon: UserPlus,
+  },
+  {
+    title: "Dimensiones Matriz",
+    href: "/datos-maestros/dimensiones-matriz",
+    icon: LayoutGrid,
+  },
+  {
+    title: "Expresiones Permitidas",
+    href: "/datos-maestros/expresiones-permitidas",
+    icon: Quote, // Usa el ícono más similar
+  },
+];
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -12,6 +41,7 @@ import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { Skeleton } from "@/components/ui/skeleton"
+import { SidebarNav } from "./sidebar-nav"
 import {
   Tooltip,
   TooltipContent,
@@ -250,6 +280,7 @@ const Sidebar = React.forwardRef<
             data-sidebar="sidebar"
             className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
           >
+            <SidebarNav items={datosMaestrosNavItems} />
             {children}
           </div>
         </div>

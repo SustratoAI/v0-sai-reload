@@ -36,6 +36,7 @@ const getRowTextColorVariantForRow = (row: Person): CellVariant | undefined => {
   return undefined;
 };
 
+
 const isRowTextBoldForRow = (row: Person): boolean | undefined => {
   if (row.status === "complicated") return true; // Filas "complicated" serán negrita como base
   if (row.firstName === "Ana") return false; // Fila de Ana no será negrita (incluso si isRowTextBold global fuera true para ella)
@@ -676,6 +677,8 @@ const ProTableShowroomPage: React.FC = () => {
           tooltipDelay={250}
           stickyHeader={true}
           stickyHeaderOffset={0}
+          getRowTextColorVariant={getRowTextColorVariantForRow}
+          isRowTextBold={isRowTextBoldForRow}
           initialVisibility={{
             department: false,
           }}

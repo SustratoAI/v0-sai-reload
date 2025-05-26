@@ -4,7 +4,7 @@ import type {
   Mode,
   ProCardVariant,
 } from "../ColorToken";
-
+import tinycolor from "tinycolor2"; 
 /**
  * Genera los tokens de fondo para ProCard usando AppColorTokens.
  */
@@ -45,10 +45,10 @@ export function generateProCardBackgroundGradients(
       variant === "secondary" ||
       variant === "tertiary"
     ) {
-      color1 = currentVariantTokens?.bg;
+      color1 = tinycolor(currentVariantTokens?.bg).setAlpha(0.6).toString();
       color2 = isDark ? neutralTokens?.bgShade : whiteTokens?.bg;
     } else {
-      color1 = currentVariantTokens?.bg;
+      color1 = tinycolor(currentVariantTokens?.bg).toString();
       color2 = neutralTokens?.bg;
     }
 

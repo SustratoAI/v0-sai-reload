@@ -47,6 +47,7 @@ export interface CheckTokens {
 
   // Tamaños
   size: {
+    borderThickness: string;
     box: string;
     checkThickness: number;
     borderRadius: string;

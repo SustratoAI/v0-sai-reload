@@ -5,70 +5,55 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
 import { Text } from "@/components/ui/text";
+import { useTheme } from "@/app/theme-provider";
+import { useMemo } from "react";
+import styles from "./sidebar-nav.module.css";
 
 interface SidebarNavItem {
-  title: string;
-  href: string;
-  icon?: LucideIcon;
-  disabled?: boolean;
+	title: string;
+	href: string;
+	icon?: LucideIcon;
+	disabled?: boolean;
 }
 
 interface SidebarNavProps {
-  items: SidebarNavItem[];
-  className?: string;
+	items: SidebarNavItem[];
+	className?: string;
 }
 
+import { SidebarNavAnimations } from "./sidebar-nav-animations";
+
 export function SidebarNav({ items, className }: SidebarNavProps) {
-  const pathname = usePathname() || "";
-  
-  return (
-    <nav className={cn("flex flex-col space-y-1", className)}>
-      {items.map((item) => {
-        const Icon = item.icon;
-        const isActive = pathname === item.href || (pathname && pathname.startsWith(`${item.href}/`));
-        
-        if (item.disabled) {
-          return (
-            <div
-              key={item.href}
-              className="flex items-center px-3 py-2 text-sm font-medium rounded-md opacity-70 cursor-not-allowed"
-            >
-              {Icon && <Icon className="w-5 h-5 mr-2" />}
-              <Text variant="muted">{item.title}</Text>
-            </div>
-          );
-        }
-        
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={cn(
-              "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
-              isActive
-                ? "bg-primary/10 text-primary hover:bg-primary/15"
-                : "hover:bg-accent hover:text-accent-foreground"
-            )}
-          >
-            {Icon && (
-              <Icon
-                className={cn(
-                  "w-5 h-5 mr-2",
-                  isActive ? "text-primary" : "text-foreground/70"
-                )}
-              />
-            )}
-            <Text 
-              variant={isActive ? "subtitle" : "default"} 
-              className={cn(
-                isActive ? "font-medium" : "font-normal"
-              )}
-            >
-              {item.title}
-            </Text>
-          </Link>
-        );
-      })}
-    </nav>
+	const pathname = usePathname() || "";
+	const { appColorTokens, mode } = useTheme();
+
+	const isDark = mode === "dark";
+	const accentBg = isDark
+		? appColorTokens.accent.bgShade
+		: appColorTokens.accent.bg;
+	const accentBgHover = isDark
+		? appColorTokens.accent.bg
+		: appColorTokens.accent.bgShade;
+	const primaryBg = `${appColorTokens.primary.bg}1A`;
+	const primaryBgHover = `${appColorTokens.primary.bg}26`;
+
+	// Crear estilos dinámicos para el hover
+	const hoverStyles = useMemo(
+		() =>
+			({
+				"--hover-bg": accentBgHover,
+				"--active-bg": primaryBg,
+				"--active-hover-bg": primaryBgHover,
+			} as React.CSSProperties),
+		[accentBgHover, primaryBg, primaryBgHover]
+	);
+
+	return (
+    <SidebarNavAnimations
+      items={items}
+      activeHref={pathname}
+      hoverStyles={hoverStyles}
+      appColorTokens={appColorTokens}
+    />
   );
 }

@@ -1,14 +1,11 @@
-"use client";
+"use client"
 
-import type React from "react";
-import { cn } from "@/lib/utils";
-import { useFontTheme } from "@/app/font-provider";
-import { useTheme } from "@/app/theme-provider";
-import {
-  generateTextTokens,
-  type TextTokens,
-} from "@/lib/theme/components/text-tokens";
-import { useMemo } from "react";
+import type React from "react"
+import { cn } from "@/lib/utils"
+import { useFontTheme } from "@/app/font-provider"
+import { useTheme } from "@/app/theme-provider"
+import { generateTextTokens, type TextTokens } from "@/lib/theme/components/text-tokens"
+import { useMemo } from "react"
 // import type {
 //   TextVariant,
 //   TextSize,
@@ -20,38 +17,29 @@ import { useMemo } from "react";
 // } from "@/lib/theme/components/text-tokens";
 
 // Definiciones de tipo locales
-type TextVariant = keyof TextTokens["variants"];
-type TextColor = keyof TextTokens["colors"];
-type GradientType = keyof TextTokens["gradients"] | boolean;
-type TextSize =
-  | "xs"
-  | "sm"
-  | "base"
-  | "lg"
-  | "xl"
-  | "2xl"
-  | "3xl"
-  | "4xl"
-  | "5xl";
-type TextWeight = "normal" | "medium" | "semibold" | "bold";
-type TextAlign = "left" | "center" | "right" | "justify";
-type OriginalColorVariant = "pure" | "text" | "dark";
+type TextVariant = keyof TextTokens["variants"]
+type TextColor = keyof TextTokens["colors"]
+type GradientType = keyof TextTokens["gradients"] | boolean
+type TextSize = "xs" | "sm" | "base" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl"
+type TextWeight = "normal" | "medium" | "semibold" | "bold"
+type TextAlign = "left" | "center" | "right" | "justify"
+type OriginalColorVariant = "pure" | "text" | "dark"
 
 // Tipo para la fuente del par a utilizar
-export type FontPairType = "heading" | "body";
+export type FontPairType = "heading" | "body"
 
 // Extender ColorVariant para incluir textShade y marcar dark como legacy
-export type ColorVariant = OriginalColorVariant | "textShade";
+export type ColorVariant = OriginalColorVariant | "textShade"
 
 export interface TextProps extends React.HTMLAttributes<HTMLElement> {
-  variant?: TextVariant;
-  size?: TextSize;
-  weight?: TextWeight;
-  align?: TextAlign;
-  as?: React.ElementType;
-  truncate?: boolean;
-  gradient?: GradientType;
-  color?: TextColor;
+  variant?: TextVariant
+  size?: TextSize
+  weight?: TextWeight
+  align?: TextAlign
+  as?: React.ElementType
+  truncate?: boolean
+  gradient?: GradientType
+  color?: TextColor
   /**
    * Define la variante del color a utilizar.
    * - "pure": Usa el color puro (generalmente más brillante).
@@ -60,11 +48,11 @@ export interface TextProps extends React.HTMLAttributes<HTMLElement> {
    * - "textShade": Usa una variante más oscura o alternativa del color de texto, ideal para variaciones sutiles o énfasis.
    * @default "text"
    */
-  colorVariant?: ColorVariant;
-  className?: string;
-  children: React.ReactNode;
-  useHeadingFont?: boolean; // Prop anterior (mantenida por compatibilidad)
-  fontType?: FontPairType; // Nueva prop para especificar explícitamente qué tipo de fuente usar
+  colorVariant?: ColorVariant
+  className?: string
+  children: React.ReactNode
+  useHeadingFont?: boolean // Prop anterior (mantenida por compatibilidad)
+  fontType?: FontPairType // Nueva prop para especificar explícitamente qué tipo de fuente usar
 }
 
 export function Text({
@@ -83,14 +71,14 @@ export function Text({
   fontType,
   ...props
 }: TextProps) {
-  const { appColorTokens, mode } = useTheme();
-  const { fontTheme } = useFontTheme();
+  const { appColorTokens, mode } = useTheme()
+  const { fontTheme } = useFontTheme()
 
   const textTokens = useMemo(() => {
-    return generateTextTokens(appColorTokens, mode);
-  }, [appColorTokens, mode]);
+    return generateTextTokens(appColorTokens, mode)
+  }, [appColorTokens, mode])
 
-  let effectiveVariantForStyleDefaults = variant;
+  let effectiveVariantForStyleDefaults = variant
   if (
     typeof Component === "string" &&
     Component.startsWith("h") &&
@@ -103,86 +91,81 @@ export function Text({
       variant === "muted" ||
       variant === "subtitle")
   ) {
-    effectiveVariantForStyleDefaults = "heading";
+    effectiveVariantForStyleDefaults = "heading"
   }
 
-  const styleDefaults = textTokens.variants[effectiveVariantForStyleDefaults];
-  const colorVariantDefaultName = textTokens.variants[variant].color;
+  const styleDefaults = textTokens.variants[effectiveVariantForStyleDefaults]
+  const colorVariantDefaultName = textTokens.variants[variant].color
 
-  let finalColorName: TextColor =
-    initialColor || (colorVariantDefaultName as TextColor);
-  let finalGradient: GradientType | boolean = initialGradient;
-  const finalColorVariant: ColorVariant = colorVariant || "text";
+  let finalColorName: TextColor = initialColor || (colorVariantDefaultName as TextColor)
+  let finalGradient: GradientType | boolean = initialGradient
+  const finalColorVariant: ColorVariant = colorVariant || "text"
 
   if (initialColor === undefined && initialGradient === false) {
     if (variant === "heading") {
-      finalGradient = "primary";
+      finalGradient = "primary"
     } else if (variant === "subheading") {
-      finalColorName = "secondary";
+      finalColorName = "secondary"
     } else if (variant === "title") {
-      finalColorName = "tertiary";
+      finalColorName = "tertiary"
     }
   }
 
-  const finalSize = size || (styleDefaults.size as TextSize);
-  const finalWeight = weight || (styleDefaults.weight as TextWeight);
+  const finalSize = size || (styleDefaults.size as TextSize)
+  const finalWeight = weight || (styleDefaults.weight as TextWeight)
 
   const determineFontType = (): FontPairType => {
-    if (fontType) return fontType;
+    if (fontType) return fontType
 
-    if (useHeadingFont !== undefined)
-      return useHeadingFont ? "heading" : "body";
+    if (useHeadingFont !== undefined) return useHeadingFont ? "heading" : "body"
 
-    if (
-      typeof Component === "string" &&
-      Component.startsWith("h") &&
-      Component.length === 2
-    ) {
-      return "heading";
+    if (typeof Component === "string" && Component.startsWith("h") && Component.length === 2) {
+      return "heading"
     }
 
     switch (variant) {
       case "heading":
       case "title":
       case "subheading":
-        return "heading";
+        return "heading"
       case "subtitle":
-        return "heading";
+        return "heading"
       case "default":
       case "label":
       case "caption":
       case "muted":
-        return "body";
+        return "body"
       default:
-        return "body";
+        return "body"
     }
-  };
+  }
 
-  const finalFontType = determineFontType();
+  const finalFontType = determineFontType()
 
   const sizeStyles: Record<TextSize, string> = {
     xs: "text-xs",
     sm: "text-sm",
     base: "text-base",
+    md: "text-md",
     lg: "text-lg",
     xl: "text-xl",
     "2xl": "text-2xl",
     "3xl": "text-3xl",
     "4xl": "text-4xl",
     "5xl": "text-5xl",
-  };
+  }
   const weightStyles: Record<TextWeight, string> = {
     normal: "font-normal",
     medium: "font-medium",
     semibold: "font-semibold",
     bold: "font-bold",
-  };
+  }
   const alignStyles: Record<TextAlign, string> = {
     left: "text-left",
     center: "text-center",
     right: "text-right",
     justify: "text-justify",
-  };
+  }
   const variantStyles: Record<TextVariant, string> = {
     default: "",
     heading: "tracking-tight",
@@ -192,7 +175,7 @@ export function Text({
     label: "",
     caption: "",
     muted: "",
-  };
+  }
 
   const classes = cn(
     variantStyles[variant],
@@ -200,95 +183,80 @@ export function Text({
     weightStyles[finalWeight],
     align && alignStyles[align],
     truncate && "truncate",
-    className
-  );
+    className,
+  )
 
   const getTextColor = () => {
-    if (finalGradient) return "transparent";
+    if (finalGradient) return "transparent"
 
-    if (!textTokens?.colors) return "inherit";
-    const tokenSet = textTokens.colors[finalColorName];
-    if (!tokenSet) return "inherit";
+    if (!textTokens?.colors) return "inherit"
+    const tokenSet = textTokens.colors[finalColorName]
+    if (!tokenSet) return "inherit"
 
-    if (finalColorVariant === "textShade" && tokenSet.textShade)
-      return tokenSet.textShade;
-    if (finalColorVariant === "dark" && tokenSet.dark) return tokenSet.dark;
-    if (finalColorVariant === "pure" && tokenSet.pure) return tokenSet.pure;
-    return tokenSet.text;
-  };
+    if (finalColorVariant === "textShade" && tokenSet.textShade) return tokenSet.textShade
+    if (finalColorVariant === "dark" && tokenSet.dark) return tokenSet.dark
+    if (finalColorVariant === "pure" && tokenSet.pure) return tokenSet.pure
+    return tokenSet.text
+  }
 
   const baseStyle: React.CSSProperties = {
     color: getTextColor(),
-    fontFamily:
-      finalFontType === "heading"
-        ? "var(--font-family-headings)"
-        : "var(--font-family-base)",
-    fontWeight:
-      finalFontType === "heading"
-        ? "var(--font-weight-headings)"
-        : "var(--font-weight-base)",
-    letterSpacing:
-      finalFontType === "heading"
-        ? "var(--letter-spacing-headings)"
-        : "var(--letter-spacing-body)",
+    fontFamily: finalFontType === "heading" ? "var(--font-family-headings)" : "var(--font-family-base)",
+    fontWeight: finalFontType === "heading" ? "var(--font-weight-headings)" : "var(--font-weight-base)",
+    letterSpacing: finalFontType === "heading" ? "var(--letter-spacing-headings)" : "var(--letter-spacing-body)",
     lineHeight: "var(--line-height)",
-  };
+  }
 
   if (!finalGradient) {
     return (
       <Component className={classes} style={baseStyle} {...props}>
         {children}
       </Component>
-    );
+    )
   }
 
   if (!textTokens?.gradients) {
     const fallbackTextColorStyle: React.CSSProperties = {
       ...baseStyle,
       color: (() => {
-        if (!textTokens?.colors) return "inherit";
-        const tokenSet = textTokens.colors[finalColorName];
-        if (!tokenSet) return "inherit";
-        if (finalColorVariant === "textShade" && tokenSet.textShade)
-          return tokenSet.textShade;
-        if (finalColorVariant === "dark" && tokenSet.dark) return tokenSet.dark;
-        if (finalColorVariant === "pure" && tokenSet.pure) return tokenSet.pure;
-        return tokenSet.text;
+        if (!textTokens?.colors) return "inherit"
+        const tokenSet = textTokens.colors[finalColorName]
+        if (!tokenSet) return "inherit"
+        if (finalColorVariant === "textShade" && tokenSet.textShade) return tokenSet.textShade
+        if (finalColorVariant === "dark" && tokenSet.dark) return tokenSet.dark
+        if (finalColorVariant === "pure" && tokenSet.pure) return tokenSet.pure
+        return tokenSet.text
       })(),
-    };
+    }
     return (
       <Component className={classes} style={fallbackTextColorStyle} {...props}>
         {children}
       </Component>
-    );
+    )
   }
 
-  const gradientTypeToUse = finalGradient === true ? "primary" : finalGradient;
+  const gradientTypeToUse = finalGradient === true ? "primary" : finalGradient
 
-  const gradientColors =
-    textTokens.gradients[
-      gradientTypeToUse as Exclude<TextColor, "default" | "muted" | "neutral">
-    ];
+  const gradientColors = textTokens.gradients[gradientTypeToUse as Exclude<TextColor, "default" | "muted" | "neutral">]
 
   if (!gradientColors) {
     const fallbackTextColorStyle: React.CSSProperties = {
       ...baseStyle,
       color: (() => {
-        if (!textTokens?.colors) return "inherit";
-        const tokenSet = textTokens.colors[finalColorName];
-        if (!tokenSet) return "inherit";
-        if (finalColorVariant === "textShade" && tokenSet.textShade)
-          return tokenSet.textShade;
-        if (finalColorVariant === "dark" && tokenSet.dark) return tokenSet.dark;
-        if (finalColorVariant === "pure" && tokenSet.pure) return tokenSet.pure;
-        return tokenSet.text;
+        if (!textTokens?.colors) return "inherit"
+        const tokenSet = textTokens.colors[finalColorName]
+        if (!tokenSet) return "inherit"
+        if (finalColorVariant === "textShade" && tokenSet.textShade) return tokenSet.textShade
+        if (finalColorVariant === "dark" && tokenSet.dark) return tokenSet.dark
+        if (finalColorVariant === "pure" && tokenSet.pure) return tokenSet.pure
+        return tokenSet.text
       })(),
-    };
+    }
     return (
       <Component className={classes} style={fallbackTextColorStyle} {...props}>
         {children}
       </Component>
-    );
+    )
   }
 
   const gradientStyle: React.CSSProperties = {
@@ -304,42 +272,24 @@ export function Text({
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
     color: "transparent",
-    fontFamily:
-      finalFontType === "heading"
-        ? "var(--font-family-headings)"
-        : "var(--font-family-base)",
-    fontWeight:
-      finalFontType === "heading"
-        ? "var(--font-weight-headings)"
-        : "var(--font-weight-base)",
-    letterSpacing:
-      finalFontType === "heading"
-        ? "var(--letter-spacing-headings)"
-        : "var(--letter-spacing-body)",
+    fontFamily: finalFontType === "heading" ? "var(--font-family-headings)" : "var(--font-family-base)",
+    fontWeight: finalFontType === "heading" ? "var(--font-weight-headings)" : "var(--font-weight-base)",
+    letterSpacing: finalFontType === "heading" ? "var(--letter-spacing-headings)" : "var(--letter-spacing-body)",
     lineHeight: "var(--line-height)",
     paddingBottom: "0.1em",
     display: "inline",
-  };
+  }
 
   const containerStyle: React.CSSProperties = {
-    fontFamily:
-      finalFontType === "heading"
-        ? "var(--font-family-headings)"
-        : "var(--font-family-base)",
-    fontWeight:
-      finalFontType === "heading"
-        ? "var(--font-weight-headings)"
-        : "var(--font-weight-base)",
-    letterSpacing:
-      finalFontType === "heading"
-        ? "var(--letter-spacing-headings)"
-        : "var(--letter-spacing-body)",
+    fontFamily: finalFontType === "heading" ? "var(--font-family-headings)" : "var(--font-family-base)",
+    fontWeight: finalFontType === "heading" ? "var(--font-weight-headings)" : "var(--font-weight-base)",
+    letterSpacing: finalFontType === "heading" ? "var(--letter-spacing-headings)" : "var(--letter-spacing-body)",
     lineHeight: "var(--line-height)",
-  };
+  }
 
   return (
     <Component className={classes} style={containerStyle} {...props}>
       <span style={gradientStyle}>{children}</span>
     </Component>
-  );
+  )
 }

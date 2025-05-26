@@ -19,7 +19,16 @@ div#__next > div { /* Para cubrir el wrapper de FontThemeProvider y Providers si
   margin: 0;
   padding: 0;
 }
-
+/* globals.css o similar */
+input:is(:-webkit-autofill, :autofill),
+textarea:is(:-webkit-autofill, :autofill) {
+  -webkit-box-shadow: 0 0 0 1000px var(--input-autofill-bg, white) inset !important; /* white como fallback si la var no está */
+          box-shadow: 0 0 0 1000px var(--input-autofill-bg, white) inset !important;
+  -webkit-text-fill-color: var(--input-text, black) !important; /* black como fallback */
+  filter: none !important; /* Para Firefox */
+  /* Considera también el color de la fuente para el placeholder si el autofill lo afecta */
+  /* caret-color: var(--input-text); /* Para que el cursor también tenga el color correcto */
+}
 body {
   /* Permite scroll si el contenido es más alto que el viewport */
   /* overflow-y: auto; /* Puedes añadir esto si es necesario, pero a menudo no lo es si height:100% está bien configurado arriba */

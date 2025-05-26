@@ -24,7 +24,7 @@ export interface IconProps {
   inverseStroke?: boolean;
   children?: React.ReactNode;
 }
-
+export type Color = "default" | "primary" | "secondary" | "tertiary" | "accent" | "neutral" | "danger" | "success";
 /**
  * Componente Icon
  * Renderiza un icono con estilos consistentes basados en el sistema de tokens

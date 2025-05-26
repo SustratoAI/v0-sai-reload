@@ -1,242 +1,262 @@
+// components/ui/textarea.tsx
+// Versión 1.0.1 (Refactorización de mensajes)
+// Componente TextArea para Sustrato.ai, con tematización dinámica y ARIA.
+// Los mensajes de texto (error, hint, success) son ahora responsabilidad de FormField.
+
 "use client";
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { AlertCircle, CheckCircle } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+// import { motion, AnimatePresence } from "framer-motion"; // Eliminado, ya que los mensajes de texto se mueven a FormField
 import { useTheme } from "@/app/theme-provider";
-import type {
-  TextareaSize,
-  TextareaVariant,
-  TextareaTokens,
+import {
+  generateTextareaTokens,
+  type TextareaSize,
+  type TextareaVariant,
+  type TextareaTokens
 } from "@/lib/theme/components/textarea-tokens";
-import { generateTextareaTokens } from "@/lib/theme/components/textarea-tokens";
-import { Icon } from "./icon";
+import { Text } from "@/components/ui/text";
 
-export interface TextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  error?: string;
-  hint?: string;
+export interface TextAreaProps
+  extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "size" | "cols"> {
+  error?: string; // Se mantiene para estilos visuales (borde) y aria-invalid
+  success?: boolean; // Se mantiene para estilos visuales (borde)
+  // successMessage?: string; // Eliminado: FormField maneja el texto
+  // hint?: string; // Eliminado: FormField maneja el texto
   isEditing?: boolean;
   showCharacterCount?: boolean;
-  size?: TextareaSize;
   variant?: TextareaVariant;
-  isSuccess?: boolean;
+  size?: TextareaSize;
+  isRequired?: boolean;
+  formFieldHintId?: string;  // ID de hint de FormField (para aria-describedby)
+  formFieldErrorId?: string; // ID de error de FormField (para aria-describedby)
 }
 
-const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
   (
     {
       className,
       error,
-      hint,
+      success,
+      // successMessage, // Eliminado
+      // hint, // Eliminado
       isEditing,
       showCharacterCount,
-      size = "md",
       variant = "default",
-      isSuccess,
+      size = "md",
+      disabled,
+      id,
+      name,
+      value,
+      onChange,
+      maxLength,
+      readOnly,
+      onFocus,
+      onBlur,
+      style,
+      isRequired,
+      formFieldHintId,
+      formFieldErrorId,
+      rows = 3, 
       ...props
     },
     ref
   ) => {
-    const [charCount, setCharCount] = React.useState(
-      props.value ? String(props.value).length : 0
-    );
     const { appColorTokens, mode } = useTheme();
+    const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+    React.useImperativeHandle(ref, () => textareaRef.current as HTMLTextAreaElement);
+
+    const charCount = React.useMemo(() => {
+      if (value === null || value === undefined) return 0;
+      return String(value).length;
+    }, [value]);
 
     const textareaTokens: TextareaTokens | null = React.useMemo(() => {
       if (!appColorTokens || !mode) return null;
       return generateTextareaTokens(appColorTokens, mode);
     }, [appColorTokens, mode]);
+    
+    React.useEffect(() => {
+      const element = textareaRef.current;
+      if (element && textareaTokens && appColorTokens) {
+        const cvt = textareaTokens.variants[variant];
+        
+        let effectiveBackgroundColor = cvt.background;
 
-    if (!textareaTokens) {
-      return (
-        <div className="w-full">
-          <textarea
-            className={cn(
-              "flex w-full min-h-[80px] rounded-md px-3 py-2 transition-all",
-              "border border-gray-300 bg-gray-100 text-sm",
-              "placeholder:text-gray-400 disabled:cursor-not-allowed disabled:opacity-50",
-              className
-            )}
-            ref={ref}
-            disabled={props.disabled}
-            placeholder="Loading..."
-            {...props}
-          />
-        </div>
-      );
-    }
+        if (disabled) {
+          effectiveBackgroundColor = cvt.disabledBackground;
+        } else if (readOnly) {
+          effectiveBackgroundColor = cvt.readOnlyBackground;
+        } else if (error) {
+          effectiveBackgroundColor = cvt.errorBackground; 
+        } else if (success) {
+          effectiveBackgroundColor = cvt.successBackground;
+        } else if (isEditing) {
+          effectiveBackgroundColor = cvt.editingBackground;
+        }
+        
+        element.style.setProperty('--textarea-bg', cvt.background);
+        element.style.setProperty('--textarea-border', cvt.border);
+        element.style.setProperty('--textarea-text', cvt.text);
+        element.style.setProperty('--textarea-placeholder', cvt.placeholder);
+        
+        element.style.setProperty('--textarea-focus-border', cvt.focusBorder);
+        element.style.setProperty('--textarea-focus-ring', cvt.focusRing);
+        
+        element.style.setProperty('--textarea-error-bg', cvt.errorBackground);
+        element.style.setProperty('--textarea-error-border', cvt.errorBorder);
+        element.style.setProperty('--textarea-error-ring', cvt.errorRing);
+        
+        element.style.setProperty('--textarea-success-bg', cvt.successBackground);
+        element.style.setProperty('--textarea-success-border', cvt.successBorder);
+        element.style.setProperty('--textarea-success-ring', cvt.successRing);
+        
+        element.style.setProperty('--textarea-disabled-bg', cvt.disabledBackground);
+        element.style.setProperty('--textarea-disabled-border', cvt.disabledBorder);
+        element.style.setProperty('--textarea-disabled-text', cvt.disabledText);
+        
+        element.style.setProperty('--textarea-readonly-bg', cvt.readOnlyBackground);
+        element.style.setProperty('--textarea-readonly-border', cvt.readOnlyBorder);
+        element.style.setProperty('--textarea-readonly-text', cvt.readOnlyText);
+        
+        element.style.setProperty('--textarea-editing-bg', cvt.editingBackground);
 
-    const variantTokens = textareaTokens.variants[variant];
-    const sizeTokens = textareaTokens.sizes[size];
+        element.style.setProperty('--textarea-autofill-bg', effectiveBackgroundColor);
+      }
+    }, [textareaTokens, variant, appColorTokens, disabled, error, success, isEditing, readOnly, id, name]);
+
+    const sizeTokens = textareaTokens ? textareaTokens.sizes[size] : { 
+      height: "h-auto", minHeight: "min-h-[80px]", fontSize: "text-sm", paddingX: "px-3", paddingY: "py-2" 
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setCharCount(e.target.value.length);
-      props.onChange?.(e);
+      onChange?.(e);
     };
 
-    React.useEffect(() => {
-      if (props.value !== undefined) {
-        setCharCount(String(props.value).length);
-      }
-    }, [props.value]);
+    const baseClasses = [
+      "peer", "w-full", "rounded-md", "transition-all", "border",
+      sizeTokens.height,
+      sizeTokens.minHeight,
+      sizeTokens.fontSize,
+      sizeTokens.paddingX,
+      sizeTokens.paddingY,
+      "placeholder:text-[var(--textarea-placeholder)]",
+      "text-[var(--textarea-text)]",
+      "resize-y" 
+    ];
+    
+    const stateClasses: string[] = [];
+    if (disabled) { 
+      stateClasses.push( 
+        "border-[var(--textarea-disabled-border)]", 
+        "bg-[var(--textarea-disabled-bg)]", 
+        "text-[var(--textarea-disabled-text)]", 
+        "cursor-not-allowed", 
+        "opacity-70" 
+      ); 
+    } else if (readOnly) { 
+      stateClasses.push( 
+        "border-[var(--textarea-readonly-border)]", 
+        "bg-[var(--textarea-readonly-bg)]", 
+        "text-[var(--textarea-readonly-text)]",
+        "cursor-default", 
+        "read-only:focus:outline-none", 
+        "read-only:focus:ring-0", 
+        "read-only:focus:border-[var(--textarea-readonly-border)]"
+      ); 
+    } else if (error) { 
+      stateClasses.push(
+        "border-[var(--textarea-error-border)]", 
+        "bg-[var(--textarea-error-bg)]"
+      ); 
+    } else if (success) { 
+      stateClasses.push(
+        "border-[var(--textarea-success-border)]", 
+        "bg-[var(--textarea-success-bg)]"
+      ); 
+    } else if (isEditing) { 
+      stateClasses.push(
+        "border-[var(--textarea-border)]", 
+        "bg-[var(--textarea-editing-bg)]"
+      ); 
+    } else { 
+      stateClasses.push(
+        "border-[var(--textarea-border)]", 
+        "bg-[var(--textarea-bg)]"
+      ); 
+    }
+    
+    const focusClasses: string[] = [];
+    if (!disabled && !readOnly) { 
+      focusClasses.push("focus:outline-none"); 
+      if (error) { 
+        focusClasses.push(
+          "focus:border-[var(--textarea-error-border)]", 
+          "focus:shadow-[0_0_0_3px_var(--textarea-error-ring)]"
+        ); 
+      } else if (success) { 
+        focusClasses.push(
+          "focus:border-[var(--textarea-success-border)]", 
+          "focus:shadow-[0_0_0_3px_var(--textarea-success-ring)]"
+        ); 
+      } else { 
+        focusClasses.push(
+          "focus:border-[var(--textarea-focus-border)]", 
+          "focus:shadow-[0_0_0_3px_var(--textarea-focus-ring)]"
+        ); 
+      } 
+    }
+    
+    const textareaClasses = cn(...baseClasses, ...stateClasses, ...focusClasses, className);
+    
+    // Construcción de aria-describedby con IDs de FormField
+    const describedByArray = [];
+    if (formFieldErrorId) describedByArray.push(formFieldErrorId);
+    if (formFieldHintId) describedByArray.push(formFieldHintId);
+    const ariaDescribedBy = describedByArray.length > 0 ? describedByArray.join(" ") : undefined;
 
-    const getCounterColor = () => {
-      if (!props.maxLength) return variantTokens.placeholder;
-      if (charCount === props.maxLength) return variantTokens.successText;
-      if (charCount > props.maxLength) return variantTokens.errorText;
-      if (charCount >= props.maxLength * 0.8)
-        return variantTokens.warningText || variantTokens.placeholder;
-      return variantTokens.placeholder;
-    };
-
-    const mapTextareaSizeToIconSize = (textareaSize: TextareaSize) => {
-      switch (textareaSize) {
-        case "sm":
-          return "xs";
-        case "lg":
-          return "md";
-        default:
-          return "sm";
-      }
-    };
-    const iconSize = mapTextareaSizeToIconSize(size);
-
-    const currentBorderColor = error
-      ? variantTokens.errorBorder
-      : isSuccess
-      ? variantTokens.successBorder
-      : variantTokens.border;
-
-    const currentFocusBorderColor = error
-      ? variantTokens.errorBorder
-      : isSuccess
-      ? variantTokens.successBorder
-      : variantTokens.focusBorder;
-
-    const currentFocusRingColor = error
-      ? variantTokens.errorRing
-      : isSuccess
-      ? variantTokens.successRing
-      : variantTokens.focusRing;
-
-    const currentBackgroundColor = props.disabled
-      ? variantTokens.disabledBackground
-      : error
-      ? variantTokens.errorBackground
-      : isSuccess
-      ? variantTokens.successBackground
-      : isEditing
-      ? variantTokens.editingBackground
-      : variantTokens.background;
+    const showCharCountEffective = showCharacterCount && maxLength && maxLength > 0 && !disabled && !readOnly;
 
     return (
       <div className="w-full">
-        <div className="relative w-full">
-          <textarea
-            className={cn(
-              "peer flex w-full rounded-md transition-all",
-              sizeTokens.minHeight,
-              sizeTokens.paddingX,
-              sizeTokens.paddingY,
-              sizeTokens.fontSize,
-              "border",
-              "placeholder:text-muted-foreground",
-              props.disabled &&
-                "disabled:cursor-not-allowed disabled:opacity-50",
-              className
-            )}
-            ref={ref}
-            onChange={handleChange}
-            style={{
-              backgroundColor: currentBackgroundColor,
-              color: props.disabled
-                ? variantTokens.disabledText
-                : variantTokens.text,
-              borderColor: currentBorderColor,
-              outline: "none",
-              boxShadow: "none",
-            }}
-            onFocus={(e) => {
-              const target = e.target as HTMLTextAreaElement;
-              target.style.borderColor = currentFocusBorderColor;
-              target.style.boxShadow = `0 0 0 4px ${currentFocusRingColor}`;
-              props.onFocus?.(e);
-            }}
-            onBlur={(e) => {
-              const target = e.target as HTMLTextAreaElement;
-              target.style.borderColor = currentBorderColor;
-              target.style.boxShadow = "none";
-              props.onBlur?.(e);
-            }}
-            placeholder={props.placeholder}
-            {...props}
-          />
-
-          <AnimatePresence>
-            {error && (
-              <motion.div
-                key="textarea-error-icon"
-                className="absolute right-3 top-3"
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div style={{ color: variantTokens.errorText }}>
-                  {React.createElement(AlertCircle, {
-                    size: iconSize === "xs" ? 12 : iconSize === "sm" ? 14 : 16,
-                  })}
-                </div>
-              </motion.div>
-            )}
-            {isSuccess && !error && (
-              <motion.div
-                key="textarea-success-icon"
-                className="absolute right-3 top-3"
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div style={{ color: variantTokens.successText }}>
-                  {React.createElement(CheckCircle, {
-                    size: iconSize === "xs" ? 12 : iconSize === "sm" ? 14 : 16,
-                  })}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        <div className="mt-1.5 flex justify-between text-xs">
-          <div
-            className={cn("text-xs")}
-            style={{
-              color: error
-                ? variantTokens.errorText
-                : isSuccess
-                ? variantTokens.successText
-                : variantTokens.placeholder,
-            }}
-          >
-            {error ? error : hint}
-          </div>
-
-          {showCharacterCount && props.maxLength && (
-            <div
-              className={cn("ml-auto text-xs", getCounterColor())}
-              style={{ color: getCounterColor() }}
+        <textarea
+          id={id}
+          name={name}
+          className={textareaClasses}
+          ref={textareaRef}
+          value={value ?? ""}
+          onChange={handleChange}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          disabled={disabled}
+          maxLength={maxLength}
+          readOnly={readOnly}
+          style={style}
+          rows={rows}
+          aria-invalid={!!error} // Sigue funcionando como antes
+          aria-required={isRequired}
+          aria-describedby={ariaDescribedBy} // Actualizado para usar IDs de FormField
+          {...props}
+        />
+        
+        {/* Sección de mensajes de texto eliminada. FormField es ahora responsable. */}
+        {/* El contador de caracteres se mantiene si showCharacterCount es true. */}
+        {showCharCountEffective && (
+          <div className="mt-1.5 flex justify-end"> {/* Solo muestra el div si hay contador */}
+            <Text
+              size="xs"
+              color={error && appColorTokens ? "danger" : "neutral"}
+              colorVariant={error && appColorTokens ? "pure" : "textShade"}
+              className="opacity-70"
             >
-              {charCount}/{props.maxLength}
-            </div>
-          )}
-        </div>
+              {charCount}/{maxLength}
+            </Text>
+          </div>
+        )}
       </div>
     );
   }
 );
 
-Textarea.displayName = "Textarea";
-export { Textarea };
+TextArea.displayName = "TextArea";
+export { TextArea };

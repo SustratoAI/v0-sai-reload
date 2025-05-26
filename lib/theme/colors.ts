@@ -77,8 +77,8 @@ export const themes = {
       contrastText: "#ECF2FE",
       textShade: "#132951",
       textDark: "#132951",
-      bg: "#DDE5FA",
-      bgShade: "#A6ACBC",
+      bg: "#DCE6F9",
+      bgShade: "#CBDAF6",
       bgDark: "#A6ACBC",
     },
     secondary: {
@@ -89,8 +89,8 @@ export const themes = {
       contrastText: "#EEF1F5",
       textShade: "#202B3D",
       textDark: "#202B3D",
-      bg: "#D2E1FF",
-      bgShade: "#A0B0CC",
+      bg: "#D6E2FF",
+      bgShade: "#C2D4FF",
       bgDark: "#A0B0CC",
     },
     tertiary: {
@@ -102,7 +102,7 @@ export const themes = {
       textShade: "#0A3951",
       textDark: "#0A3951",
       bg: "#d7f1fe",
-      bgShade: "#95B0BD",
+      bgShade: "#C5EAFC",
       bgDark: "#95B0BD",
     },
   } as ThemeColors,
@@ -160,28 +160,28 @@ export const themes = {
       bgDark: "#B3E7E4", // Legado
     },
     secondary: {
-      pure: "#3D8F8A", // Cerceta más apagado
-      pureShade: "#2C6A66",
-      pureDark: "#2C6A66",
-      text: "#133C39",
+      pure: "#3F683C", // Cerceta más apagado
+      pureShade: "#375B34",
+      pureDark: "#375B34",
+      text: "#274125",
       contrastText: "#D6F0EE",
-      textShade: "#1E5753",
+      textShade: "#101a0f",
       textDark: "#1E5753",
-      bg: "#EBF5F4",
-      bgShade: "#C7E0DE",
+      bg: "#e5f7e4",
+      bgShade: "#d9e9d8",
       bgDark: "#C7E0DE",
     },
     tertiary: {
-      pure: "#6ECFCA",
-      pureShade: "#54B2AC",
-      pureDark: "#54B2AC",
-      text: "#2B6B66",
-      contrastText: "#E0F7F6",
-      textShade: "#3E8A84",
-      textDark: "#3E8A84",
-      bg: "#eef7ea",
-      bgShade: "#c1e2ec",
-      bgDark: "#D6EFEC",
+      pure:       "#78C731",
+  pureShade:  "#56911F",
+  pureDark:   "#56911F",
+  text:       "#354F18",
+  contrastText:"#F8FEEB",
+  textShade:  "#23370F",
+  textDark:   "#23370F",
+  bg:         "#ECF8D8",
+  bgShade:    "#C8D7B4",
+  bgDark:     "#C8D7B4",
     },
   } as ThemeColors,
   greenDark: {
@@ -233,8 +233,8 @@ export const themes = {
       contrastText: "#FEF1E8",
       textShade: "#5C2909",
       textDark: "#5C2909",
-      bg: "#FAECE3",
-      bgShade: "#BCB1AA",
+      bg: "#f6ede7",
+      bgShade: "#d5c6bd",
       bgDark: "#BCB1AA",
     },
     secondary: {
@@ -245,8 +245,8 @@ export const themes = {
       contrastText: "#F4ECE7",
       textShade: "#381905",
       textDark: "#381905",
-      bg: "#E1D1C6",
-      bgShade: "#A99D95",
+      bg: "#e3d8d1",
+      bgShade: "#c1b3aa",
       bgDark: "#A99D95",
     },
     tertiary: {
@@ -258,7 +258,7 @@ export const themes = {
       textShade: "#2C1020",
       textDark: "#2C1020",
       bg: "#F5E6ED",
-      bgShade: "#BFA3B5",
+      bgShade: "#e4c4d9",
       bgDark: "#BFA3B5",
     },
   } as ThemeColors,
@@ -314,8 +314,8 @@ export const semantic: AllSemanticColors = {
     contrastText: "#F3EDFE",
     textShade: "#4D2C8A",
     textDark: "#4D2C8A",
-    bg: "#E8D9F9",
-    bgShade: "#AEA3BB",
+    bg: "#F0EAFA",
+    bgShade: "#E8D9F9",
     bgDark: "#AEA3BB",
   },
   accentDark: {
@@ -334,20 +334,20 @@ export const semantic: AllSemanticColors = {
 
   success: {
     // Light variant
-    pure: "#3DFF94",
+    pure: "hsl(133, 80%, 38%)",
     pureShade: "#2DBF6F",
     pureDark: "#2DBF6F",
     text: "#45574d",
     contrastText: "#1f3c2b",
     textShade: "#33413A",
     textDark: "#33413A",
-    bg: "#cffae3",
-    bgShade: "#9BBDAA",
+    bg: "#E3FAEF" ,
+    bgShade: "#cffae3",
     bgDark: "#9BBDAA",
   },
   successDark: {
     // Dark variant
-    pure: "#60FFAA",
+    pure: "#08f376",
     pureShade: "#3DFF94",
     pureDark: "#3DFF94",
     text: "#97FBC9",
@@ -368,8 +368,8 @@ export const semantic: AllSemanticColors = {
     contrastText: "#3d3b27",
     textShade: "#524D13",
     textDark: "#524D13",
-    bg: "#FAF7DF",
-    bgShade: "#BBB9A7",
+    bg: "#f8f2c9",
+    bgShade: "#efee9a",
     bgDark: "#BBB9A7",
   },
   warningDark: {
@@ -395,8 +395,8 @@ export const semantic: AllSemanticColors = {
     contrastText: "#FDEBEC",
     textShade: "#501317",
     textDark: "#501317",
-    bg: "#F7DDDF",
-    bgShade: "#B9A6A7",
+    bg: "#F7ECEC",
+    bgShade: "#F7DDDF",
     bgDark: "#B9A6A7",
   },
   dangerDark: {
@@ -423,7 +423,7 @@ export const semantic: AllSemanticColors = {
     textShade: "#111827",
     textDark: "#111827",
     bg: "#F9FAFB",
-    bgShade: "#c6c8cb",
+    bgShade: "#d9dcdf",
     bgDark: "#c6c8cb",
   },
   neutralDark: {
@@ -491,3 +491,4 @@ export const colors = {
 };
 
 export default colors;
+ /* —— Light —— */

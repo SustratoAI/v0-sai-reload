@@ -100,6 +100,7 @@ export function createAppColorTokens(
     secondary: themePalette.secondary,
     tertiary: themePalette.tertiary,
 
+
     // Paletas semánticas
     accent: activeSemanticShades.accent,
     success: activeSemanticShades.success,

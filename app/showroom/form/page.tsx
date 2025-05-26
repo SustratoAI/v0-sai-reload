@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { TextArea } from "@/components/ui/textarea";
 import { SelectCustom } from "@/components/ui/select-custom";
 import { FormField } from "@/components/ui/form-field";
 import { Text } from "@/components/ui/text";
@@ -295,7 +295,7 @@ export default function ShowroomForm() {
 
           {/* Textarea */}
           <FormField label="Mensaje" htmlFor="message-textarea">
-            <Textarea
+            <TextArea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Escribe tu mensaje aquí"
@@ -310,7 +310,7 @@ export default function ShowroomForm() {
             htmlFor="comments-textarea"
             error="Este campo es obligatorio"
           >
-            <Textarea
+            <TextArea
               placeholder="Escribe tus comentarios"
               error="Este campo es obligatorio"
             />
@@ -322,7 +322,7 @@ export default function ShowroomForm() {
             htmlFor="feedback-textarea"
             hint="Tu retroalimentación ha sido guardada"
           >
-            <Textarea value="¡Excelente trabajo!" isSuccess={true} />
+            <TextArea value="¡Excelente trabajo!" success={true} />
           </FormField>
 
           {/* Textarea en modo edición */}
@@ -331,9 +331,9 @@ export default function ShowroomForm() {
             htmlFor="notes-textarea"
             hint="Modo edición activado"
           >
-            <Textarea
+            <TextArea
               value="Estas son mis notas personales."
-              isEditing={true}
+                isEditing={true}
             />
           </FormField>
 

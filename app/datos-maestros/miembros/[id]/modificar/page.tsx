@@ -17,9 +17,12 @@ import { CustomButton } from "@/components/ui/custom-button";
 import { PageHeader } from "@/components/common/page-header";
 import { SustratoLoadingLogo } from "@/components/ui/sustrato-loading-logo";
 import { MiembroForm, MiembroFormValues } from "@/app/datos-maestros/miembros/components/MiembroForm";
-import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
+import { ArrowLeft, User } from "lucide-react";
 import { useLoading } from "@/contexts/LoadingContext";
+import { PageBackground } from "@/components/ui/page-background";
+import { PageTitle } from "@/components/ui/page-title";
+import { ProCard } from "@/components/ui/pro-card";
 
 interface RolOption {
   value: string;
@@ -31,8 +34,7 @@ export default function ModificarMiembroPage() {
   const params = useParams();
   const memberId = params?.id ? String(params.id) : "";
   const { proyectoActual } = useAuth();
-  const { toast } = useToast();
-  const { showLoading, hideLoading } = useLoading(); // isLoading: isGlobalLoading no se usa aquí
+  const { showLoading, hideLoading, isLoading: isGlobalLoading } = useLoading();
 
   const [isButtonSubmitting, setIsButtonSubmitting] = useState(false);
   const [isPageLoading, setIsPageLoading] = useState(true);
@@ -41,7 +43,6 @@ export default function ModificarMiembroPage() {
   const [error, setError] = useState<string | null>(null);
 
   const cargarDatos = useCallback(async () => {
-    // ... (Lógica de cargarDatos sin cambios, como la teníamos) ...
     console.log("[Page] cargarDatos: Iniciando carga de datos de página...");
     setIsPageLoading(true);
     setError(null);
@@ -59,6 +60,7 @@ export default function ModificarMiembroPage() {
       setIsPageLoading(false);
       return;
     }
+
     try {
       console.log(`[Page] cargarDatos: Cargando roles para proyecto ID: ${proyectoActual.id}`);
       const resultadoRoles = await obtenerRolesDisponiblesProyecto(proyectoActual.id);
@@ -101,30 +103,26 @@ export default function ModificarMiembroPage() {
   }, [proyectoActual?.id, memberId]);
 
   useEffect(() => {
-    // ... (useEffect principal sin cambios, como lo teníamos) ...
     console.log("[Page] useEffect principal. proyectoActual?.id:", proyectoActual?.id, "memberId:", memberId);
     if (proyectoActual?.id && memberId) {
       cargarDatos();
-    } else if (!proyectoActual?.id && !isPageLoading) { 
-        setError("Esperando selección de proyecto activo...");
+    } else if (!proyectoActual?.id && !isPageLoading) {
+      setError("Esperando selección de proyecto activo...");
     } else if (!memberId && proyectoActual?.id && !isPageLoading) {
-        setError("ID de miembro no especificado.");
+      setError("ID de miembro no especificado.");
     }
   }, [proyectoActual?.id, memberId, cargarDatos]);
 
-  // PRUEBA 1: onSubmit SIMPLIFICADO
   const onSubmit = async (data: MiembroFormValues) => {
-    console.log('[Page] onSubmit (PRUEBA 1) - Datos del formulario:', data);
+    console.log('[Page] onSubmit - Datos del formulario:', data);
     if (!proyectoActual?.id || !memberId || !miembro) {
-      toast({ title: "Error de Aplicación (Prueba 1)", description: "Faltan datos esenciales.", variant: "destructive" });
+      toast.error("Error de Aplicación: Faltan datos esenciales.");
       return;
     }
 
-    // Preparar payloads (esta parte es necesaria para la lógica de "Sin cambios" y para la llamada real)
     const profileUpdates: Partial<Omit<MemberProfileData, "user_id" | "public_contact_email">> = {};
     if (data.firstName !== (miembro.profile?.first_name || "")) profileUpdates.first_name = data.firstName;
     if (data.lastName !== (miembro.profile?.last_name || "")) profileUpdates.last_name = data.lastName;
-    // ... (completar con todos los campos de profileUpdates como en la versión anterior)
     if (data.displayName !== (miembro.profile?.public_display_name || "")) profileUpdates.public_display_name = data.displayName;
     if (data.institution !== (miembro.profile?.primary_institution || "")) profileUpdates.primary_institution = data.institution;
     if (data.phone !== (miembro.profile?.contact_phone || "")) profileUpdates.contact_phone = data.phone;
@@ -132,22 +130,19 @@ export default function ModificarMiembroPage() {
     if (data.language !== (miembro.profile?.preferred_language || "")) profileUpdates.preferred_language = data.language;
     if (data.pronouns !== (miembro.profile?.pronouns || "")) profileUpdates.pronouns = data.pronouns;
 
-
     const memberUpdatesForAction: Parameters<typeof modificarDetallesMiembroEnProyecto>[0]['memberUpdates'] = {};
     if (data.rolId && data.rolId !== miembro.project_role_id) {
       memberUpdatesForAction.nuevoRolId = data.rolId;
     }
-    // ... (otros campos de memberUpdates si los tienes)
 
     if (Object.keys(profileUpdates).length === 0 && Object.keys(memberUpdatesForAction).length === 0) {
-      console.log("[Page] onSubmit (PRUEBA 1): No se detectaron cambios.");
-      toast({ title: "Sin Cambios (Prueba 1)", description: "No se detectaron modificaciones." });
-      return; 
+      console.log("[Page] onSubmit: No se detectaron cambios.");
+      toast("Sin Cambios", { description: "No se detectaron modificaciones." });
+      return;
     }
 
-    // Para esta prueba, setIsButtonSubmitting y showLoading siguen siendo útiles
-    setIsButtonSubmitting(true); 
-    showLoading("Actualizando (Prueba 1)..."); 
+    setIsButtonSubmitting(true);
+    showLoading("Actualizando información del miembro...");
 
     const payloadFinal: Parameters<typeof modificarDetallesMiembroEnProyecto>[0] = {
       proyectoId: proyectoActual.id,
@@ -155,69 +150,53 @@ export default function ModificarMiembroPage() {
     };
     if (Object.keys(profileUpdates).length > 0) payloadFinal.profileUpdates = profileUpdates;
     if (Object.keys(memberUpdatesForAction).length > 0) payloadFinal.memberUpdates = memberUpdatesForAction;
-    
+
     let resultado: ResultadoOperacion<null> | null = null;
 
     try {
-      console.log('[Page] onSubmit (PRUEBA 1): Enviando actualización con payload:', JSON.stringify(payloadFinal, null, 2));
+      console.log('[Page] onSubmit: Enviando actualización con payload:', JSON.stringify(payloadFinal, null, 2));
       resultado = await modificarDetallesMiembroEnProyecto(payloadFinal);
-      console.log('[Page] onSubmit (PRUEBA 1): Resultado de SA:', resultado);
+      console.log('[Page] onSubmit: Resultado de modificarDetallesMiembroEnProyecto:', resultado);
     } catch (err) {
-      console.error("[Page] onSubmit (PRUEBA 1): Excepción al llamar a SA:", err);
-      hideLoading(); 
+      console.error("[Page] onSubmit: Excepción al llamar a la Server Action:", err);
+      hideLoading();
       setIsButtonSubmitting(false);
-      toast({
-        title: "Error Inesperado en Comunicación (Prueba 1)",
-        description: `Ocurrió un error: ${(err as Error).message}`,
-        variant: "destructive",
+      toast.error("Error Inesperado en Comunicación", {
+        description: `Ocurrió un error al procesar la solicitud: ${(err as Error).message}`,
       });
-      return; 
+      return;
     }
-
-    // Lógica simplificada después de la respuesta de la SA para la PRUEBA 1
-    hideLoading(); // Ocultar loading global INMEDIATAMENTE después de la respuesta
 
     if (resultado?.success) {
-      console.log("[Page] onSubmit (PRUEBA 1): SA reportó ÉXITO. Mostrando toast...");
-      toast({
-        title: "ÉXITO (PRUEBA TOAST)",
-        description: "Actualización correcta (SA dice success: true). ¿Me ves durante 5 segundos?",
-        duration: 5000, 
+      hideLoading();
+      const toastDuration = 3000; // El toast se mostrará por 3 segundos
+      toast.success("Miembro Actualizado", {
+        description: "La información del miembro ha sido actualizada exitosamente.",
+        duration: toastDuration,
       });
-      console.log("[Page] onSubmit (PRUEBA 1): Toast de ÉXITO debería estar visible.");
-      
-      // NO HACEMOS NADA MÁS (ni setIsButtonSubmitting(false) aquí, ni redirección)
-      // Dejamos que el toast viva sus 5 segundos.
-      // El setIsButtonSubmitting(false) se podría poner en un setTimeout muy largo o quitarlo para esta prueba.
+
+      // CAMBIO: Reducir el delay para la redirección
+      const redirectDelay = 1500; // Redirigir después de 1.5 segundos
+
+      console.log(`[Page] onSubmit: Toast de éxito mostrado. Redirección programada en ${redirectDelay}ms.`);
       setTimeout(() => {
-          setIsButtonSubmitting(false); // Solo para que el botón no quede "cargando" eternamente en esta prueba
-          console.log("[Page] onSubmit (PRUEBA 1): Botón submitting = false, después de 5s.");
-      }, 5100);
-
-
-    } else if (resultado) { 
-      console.log("[Page] onSubmit (PRUEBA 1): SA reportó ERROR. Mostrando toast...");
-      toast({
-        title: "ERROR (PRUEBA TOAST)",
-        description: resultado.error || "Error desconocido desde SA (Prueba 1).",
-        variant: "destructive",
-        duration: 5000,
+        try {
+          console.log("[Page] onSubmit: Ejecutando redirección ahora.");
+          router.push("/datos-maestros/miembros");
+        } catch (e) {
+          console.error("[Page] onSubmit: Error en router.push:", e);
+          window.location.href = "/datos-maestros/miembros";
+        }
+      }, redirectDelay); // Usar el nuevo redirectDelay
+    } else if (resultado) {
+      hideLoading();
+      toast.error("Error al Actualizar", {
+        description: resultado.error || "Ocurrió un error desconocido durante la actualización.",
       });
-      console.log("[Page] onSubmit (PRUEBA 1): Toast de ERROR debería estar visible.");
-      setIsButtonSubmitting(false); // Actualizar estado del botón
-    } else {
-        // Caso raro: resultado es null (no debería pasar si la SA siempre devuelve ResultadoOperacion)
-        console.error("[Page] onSubmit (PRUEBA 1): Resultado de SA fue null, lo cual es inesperado.");
-        toast({
-            title: "Error Inesperado",
-            description: "La respuesta del servidor fue inválida.",
-            variant: "destructive",
-        });
-        setIsButtonSubmitting(false);
     }
+    setIsButtonSubmitting(false);
   };
 
-  // ... (handleCancel, getNombreMiembro, valoresIniciales sin cambios) ...
   const handleCancel = () => {
     router.push("/datos-maestros/miembros");
   };
@@ -243,7 +222,6 @@ export default function ModificarMiembroPage() {
     pronouns: miembro.profile?.pronouns || "",
   } : undefined;
 
-  // ... (JSX para isPageLoading, error && !miembro, !miembro && !isPageLoading sin cambios) ...
   if (isPageLoading) {
     return (
       <div className="flex justify-center py-8">
@@ -257,67 +235,84 @@ export default function ModificarMiembroPage() {
     );
   }
 
-  if (error && !miembro) { 
+  if (error && !miembro) {
     return (
-      <div className="space-y-6">
-        <PageHeader
-          title="Error al Cargar Datos"
-          description={error}
-          actions={
-            <CustomButton
-              onClick={handleCancel}
-              leftIcon={<ArrowLeft className="h-4 w-4" />}
-              variant="outline"
-            >
-              Volver a Miembros
-            </CustomButton>
-          }
-        />
-      </div>
+      <PageBackground>
+        <div className="container mx-auto py-6">
+          <div className="space-y-6">
+            <PageHeader
+              title="Error al Cargar Datos"
+              description={error}
+              actions={
+                <CustomButton
+                  onClick={handleCancel}
+                  leftIcon={<ArrowLeft className="h-4 w-4" />}
+                  variant="outline"
+                >
+                  Volver a Miembros
+                </CustomButton>
+              }
+            />
+          </div>
+        </div>
+      </PageBackground>
     );
   }
-  
+
   if (!miembro && !isPageLoading) {
-      return (
+    return (
+      <PageBackground>
+        <div className="container mx-auto py-6">
           <div className="space-y-6">
-              <PageHeader
-                  title="Miembro no Encontrado"
-                  description="No se pudieron cargar los datos del miembro o el miembro no existe."
-                  actions={
-                      <CustomButton onClick={handleCancel} leftIcon={<ArrowLeft className="h-4 w-4" />} variant="outline">
-                          Volver a Miembros
-                      </CustomButton>
-                  }
-              />
+            <PageHeader
+              title="Miembro no Encontrado"
+              description="No se pudieron cargar los datos del miembro o el miembro no existe."
+              actions={
+                <CustomButton
+                  onClick={handleCancel}
+                  leftIcon={<ArrowLeft className="h-4 w-4" />}
+                  variant="outline"
+                >
+                  Volver a Miembros
+                </CustomButton>
+              }
+            />
           </div>
-      );
+        </div>
+      </PageBackground>
+    );
   }
-  
-  // ... (JSX principal de retorno con PageHeader y MiembroForm sin cambios) ...
+
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title={`Editar Miembro: ${getNombreMiembro()}`}
-        description="Actualiza la información del miembro en el proyecto."
-        actions={
-          <CustomButton
-            onClick={handleCancel}
-            leftIcon={<ArrowLeft className="h-4 w-4" />}
-            variant="outline"
-          >
-            Volver
-          </CustomButton>
-        }
-      />
-      {valoresIniciales && roles.length > 0 && (
-        <MiembroForm
-          modo="editar"
-          valoresIniciales={valoresIniciales}
-          rolesDisponibles={roles}
-          loading={isButtonSubmitting}
-          onSubmit={onSubmit}
-        />
-      )}
-    </div>
+    <PageBackground>
+      <div className="container mx-auto py-6">
+        <div className="space-y-6">
+          <PageTitle 
+            title={`Editar Miembro: ${getNombreMiembro()}`}
+            subtitle="Actualiza la información del miembro en el proyecto"
+            mainIcon={User}
+            breadcrumbs={[
+              { label: "Datos Maestros", href: "/datos-maestros" },
+              { label: "Miembros ", href: "/datos-maestros/miembros" },
+              { label: "Modificar Miembro" }
+            ]}
+            showBackButton={{ href: "/datos-maestros/miembros" }}
+          />
+          
+
+          {valoresIniciales && roles.length > 0 && (
+            <ProCard border="top" color="primary"   >
+            <MiembroForm
+              modo="editar"
+              valoresIniciales={valoresIniciales}
+              rolesDisponibles={roles}
+              loading={isButtonSubmitting}
+              onSubmit={onSubmit}
+            />
+            </ProCard>
+          )}
+        </div>
+      </div>
+    </PageBackground>
   );
 }

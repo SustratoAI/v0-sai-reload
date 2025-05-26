@@ -21,6 +21,9 @@ import {
   LayoutDashboard,
   FileSpreadsheet,
   Layers,
+  UserPlus,
+  ShieldCheck,
+  LayoutGrid,
 } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
@@ -289,97 +292,79 @@ export function Navbar() {
                 </Icon>
               ),
               submenu: [
-                {
-                  label: "Instituciones",
-                  href: "/datos-maestros/instituciones",
-                  icon: (isActive: boolean) => (
-                    <Icon
-                      size="sm"
-                      gradient={true}
-                      strokeOnly={!isActive}
-                      color="tertiary"
-                      colorVariant="bg"
-                      gradientWith="accent"
-                      gradientColorVariant="text"
-                      className="mr-2"
-                    >
-                      <Building />
-                    </Icon>
-                  ),
-                },
-                {
-                  label: "Entrevistados",
-                  href: "/datos-maestros/entrevistados",
-                  icon: (isActive: boolean) => (
-                    <Icon
-                      size="sm"
-                      gradient={true}
-                      strokeOnly={!isActive}
-                      color="tertiary"
-                      colorVariant="bg"
-                      gradientWith="accent"
-                      gradientColorVariant="text"
-                      className="mr-2"
-                    >
-                      <UserCircle />
-                    </Icon>
-                  ),
-                },
-                {
-                  label: "Miembros", // Changed from "Investigadores"
-                  href: "/datos-maestros/miembros", // Changed href
-                  icon: (isActive: boolean) => (
-                    <Icon
-                      size="sm"
-                      gradient={true}
-                      strokeOnly={!isActive}
-                      color="tertiary"
-                      colorVariant="bg"
-                      gradientWith="accent"
-                      gradientColorVariant="text"
-                      className="mr-2"
-                    >
-                      <Users />
-                    </Icon>
-                  ),
-                },
-                {
-                  label: "Dimensiones Matriz",
-                  href: "/datos-maestros/dimensiones",
-                  icon: (isActive: boolean) => (
-                    <Icon
-                      size="sm"
-                      gradient={true}
-                      strokeOnly={!isActive}
-                      color="tertiary"
-                      colorVariant="bg"
-                      gradientWith="accent"
-                      gradientColorVariant="text"
-                      className="mr-2"
-                    >
-                      <Database />
-                    </Icon>
-                  ),
-                },
-                {
-                  label: "Expresiones Permitidas",
-                  href: "/datos-maestros/expresiones-permitidas",
-                  icon: (isActive: boolean) => (
-                    <Icon
-                      size="sm"
-                      gradient={true}
-                      strokeOnly={!isActive}
-                      color="tertiary"
-                      colorVariant="bg"
-                      gradientWith="accent"
-                      gradientColorVariant="text"
-                      className="mr-2"
-                    >
-                      <MessageSquare />
-                    </Icon>
-                  ),
-                },
-              ],
+  {
+    label: "Miembros Proyecto",
+    href: "/datos-maestros/miembros",
+    icon: (isActive: boolean) => (
+      <Icon
+        size="sm"
+        gradient={true}
+        strokeOnly={!isActive}
+        color="tertiary"
+        colorVariant="bg"
+        gradientWith="accent"
+        gradientColorVariant="text"
+        className="mr-2"
+      >
+        <UserPlus />
+      </Icon>
+    ),
+  },
+  {
+    label: "Roles Proyecto",
+    href: "/datos-maestros/roles",
+    icon: (isActive: boolean) => (
+      <Icon
+        size="sm"
+        gradient={true}
+        strokeOnly={!isActive}
+        color="tertiary"
+        colorVariant="bg"
+        gradientWith="accent"
+        gradientColorVariant="text"
+        className="mr-2"
+      >
+        <ShieldCheck />
+      </Icon>
+    ),
+  },
+  {
+    label: "lotes",
+    href: "/datos-maestros/lote",
+    icon: (isActive: boolean) => (
+      <Icon
+        size="sm"
+        gradient={true}
+        strokeOnly={!isActive}
+        color="tertiary"
+        colorVariant="bg"
+        gradientWith="accent"
+        gradientColorVariant="text"
+        className="mr-2"
+      >
+        <Layers />
+      </Icon>
+    ),
+  },
+  {
+    label: "Dimensiones",
+    href: "/datos-maestros/dimensiones",
+    icon: (isActive: boolean) => (
+      <Icon
+        size="sm"
+        gradient={true}
+        strokeOnly={!isActive}
+        color="tertiary"
+        colorVariant="bg"
+        gradientWith="accent"
+        gradientColorVariant="text"
+        className="mr-2"
+      >
+        <LayoutGrid />
+      </Icon>
+    ),
+  },
+],
             },
           ]
         : []),

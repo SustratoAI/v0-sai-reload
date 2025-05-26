@@ -629,7 +629,7 @@ export default function ShowroomText() {
                     </div>
 
                     <div className="p-4 border rounded-md">
-                      <Text color="warning" size="xl">
+                      <Text color="warning" colorVariant= "pure" size="xl">
                         Color Warning: Color de advertencia universal.
                       </Text>
                       <Text variant="caption" className="mt-1 text-gray-500">
@@ -638,7 +638,7 @@ export default function ShowroomText() {
                     </div>
 
                     <div className="p-4 border rounded-md">
-                      <Text color="danger" size="xl">
+                      <Text color="danger" colorVariant= "pure" size="xl">
                         Color Danger: Color de peligro universal.
                       </Text>
                       <Text variant="caption" className="mt-1 text-gray-500">

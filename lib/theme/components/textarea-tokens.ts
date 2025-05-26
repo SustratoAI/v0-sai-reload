@@ -1,17 +1,17 @@
+// lib/theme/components/textarea-tokens.ts
+
 import type { AppColorTokens, ColorShade, Mode } from "../ColorToken";
 import tinycolor from "tinycolor2";
 
+// ... (Tipos TextareaVariant, TextareaSize, TextareaVariantTokens, TextareaSizeTokens, TextareaTokens sin cambios) ...
 export type TextareaVariant =
   | "default"
-  | "neutral"
-  | "white"
-  | "tertiary"
   | "primary"
   | "secondary"
-  | "success"
-  | "warning"
-  | "danger"
-  | "info";
+  | "tertiary"
+  | "accent"
+  | "neutral";
+
 export type TextareaSize = "sm" | "md" | "lg";
 
 export interface TextareaVariantTokens {
@@ -20,28 +20,23 @@ export interface TextareaVariantTokens {
   text: string;
   placeholder: string;
   iconColor: string;
-  disabledBackground: string;
-  disabledBorder: string;
-  disabledText: string;
-  errorBackground: string;
-  errorBorder: string;
-  errorText: string;
-  errorRing: string;
-  successBackground: string;
-  successBorder: string;
-  successText: string;
-  successRing: string;
-  warningText: string;
   focusBorder: string;
   focusRing: string;
   hoverBorder: string;
+  errorBackground: string;
+  errorBorder: string;
+  errorRing: string;
+  successBackground: string;
+  successBorder: string;
+  successRing: string;
+  successText: string;
+  disabledBackground: string;
+  disabledBorder: string;
+  disabledText: string;
   editingBackground: string;
-  optionSelectedBackground: string;
-  optionSelectedText: string;
-  optionHoverBackground: string;
-  optionText: string;
-  dropdownBackground: string;
-  dropdownBorder: string;
+  readOnlyBackground: string;
+  readOnlyBorder: string;
+  readOnlyText: string;
 }
 
 export interface TextareaSizeTokens {
@@ -50,13 +45,13 @@ export interface TextareaSizeTokens {
   fontSize: string;
   paddingX: string;
   paddingY: string;
-  dropdownMaxHeight: string;
 }
 
 export interface TextareaTokens {
   variants: Record<TextareaVariant, TextareaVariantTokens>;
   sizes: Record<TextareaSize, TextareaSizeTokens>;
 }
+
 
 export function generateTextareaTokens(
   appColorTokens: AppColorTokens,
@@ -66,143 +61,156 @@ export function generateTextareaTokens(
     primary,
     secondary,
     tertiary,
+    accent,
     neutral,
     danger,
     success,
-    warning,
-    accent,
-    white,
+    // white, // No se usa directamente para fondos de variantes
   } = appColorTokens;
 
-  const info = accent;
-
-  // Determinar colores de texto apropiados según el modo
-  const textColor = neutral.text;
-  const placeholderColor = tinycolor(textColor).setAlpha(0.6).toRgbString();
-
-  // Usar el color primary para los iconos, similar a select e input
-  const mainIconColor =
+  const baseTextColor = neutral.text;
+  const basePlaceholderColor = tinycolor(baseTextColor)
+    .setAlpha(0.6)
+    .toRgbString();
+  
+  const baseIconColorDefault =
     mode === "dark"
-      ? tinycolor(primary.text).setAlpha(0.9).toRgbString()
-      : tinycolor(primary.pure).setAlpha(0.9).toRgbString();
+      ? tinycolor(neutral.text).setAlpha(0.7).toRgbString()
+      : tinycolor(neutral.pure).setAlpha(0.8).toRgbString();
 
-  // Color de fondo según el modo
-  const backgroundColorByMode = mode === "dark" ? neutral.bg : white.bg;
-
-  const disabledBackground = neutral.bgShade;
-  const disabledBorder = tinycolor(neutral.pure).setAlpha(0.4).toRgbString();
-  const disabledText = tinycolor(textColor).setAlpha(0.5).toRgbString();
-
-  const editingBackground = tinycolor(tertiary.bg ? tertiary.bg : neutral.bg)
-    .setAlpha(mode === "dark" ? 0.3 : 0.5)
+  const commonDisabledBackground = neutral.bgShade;
+  const commonDisabledBorder = tinycolor(neutral.pure)
+    .setAlpha(0.4)
+    .toRgbString();
+  const commonDisabledText = tinycolor(baseTextColor)
+    .setAlpha(0.5)
     .toRgbString();
 
-  const createColoredVariant = (
-    shade: ColorShade,
-    shadeForFocusRing?: ColorShade
-  ) => {
-    const focusRingColor = shadeForFocusRing
-      ? shadeForFocusRing.pure
-      : shade.pure;
+  // --- MODIFICACIÓN AQUÍ ---
+  const commonReadOnlyBackground =
+    mode === "dark"
+      ? tinycolor(neutral.bgDark).lighten(5).setAlpha(0.8).toString()
+      // Alineado con input-tokens: usa neutral.contrastText para light mode
+      : tinycolor(neutral.contrastText).darken(0).setAlpha(0.8).toString(); 
+  // --- FIN MODIFICACIÓN ---
 
-    // Ajuste del color del icono según la variante
-    const variantIconColor =
-      mode === "dark"
-        ? tinycolor(shade.text).setAlpha(0.9).toRgbString()
-        : tinycolor(shade.pure).setAlpha(0.9).toRgbString();
+  const commonReadOnlyBorder =
+    mode === "dark"
+      ? tinycolor(neutral.pure).darken(10).toRgbString()
+      : tinycolor(neutral.pure).lighten(10).toRgbString();
+  const commonReadOnlyText = baseTextColor;
 
-    // Ajuste del color del borde al pasar el ratón según el modo
-    const variantHoverBorder =
-      mode === "dark"
-        ? tinycolor(shade.pure).lighten(10).toString()
-        : shade.bgShade;
-
-    return {
-      background: backgroundColorByMode,
-      border: shade.pure,
-      text: textColor,
-      placeholder: placeholderColor,
-      iconColor: variantIconColor,
-      disabledBackground,
-      disabledBorder,
-      disabledText,
-      errorBackground: tinycolor(danger.bg)
-        .setAlpha(mode === "dark" ? 0.3 : 0.5)
-        .toRgbString(),
-      errorBorder: danger.pure,
-      errorText: danger.text,
-      errorRing: tinycolor(danger.pure).setAlpha(0.2).toRgbString(),
-      successBackground: tinycolor(success.bg)
-        .setAlpha(mode === "dark" ? 0.3 : 0.5)
-        .toRgbString(),
-      successBorder: success.pure,
-      successText: success.text,
-      successRing: tinycolor(success.pure).setAlpha(0.2).toRgbString(),
-      warningText: warning.text,
-      focusBorder: shade.pure,
-      focusRing: tinycolor(focusRingColor).setAlpha(0.2).toRgbString(),
-      hoverBorder: variantHoverBorder,
-      editingBackground,
-      optionSelectedBackground: primary.bg,
-      optionSelectedText: primary.contrastText,
-      optionHoverBackground: neutral.bg,
-      optionText: neutral.text,
-      dropdownBackground: mode === "dark" ? neutral.bg : white.bg,
-      dropdownBorder: mode === "dark" ? neutral.bgShade : neutral.pure,
-    };
+  const commonErrorSuccessStateTokens = {
+    errorBackground: tinycolor(danger.bg)
+      .setAlpha(mode === "dark" ? 0.2 : 0.8)
+      .toRgbString(),
+    errorBorder: danger.pure,
+    errorRing: tinycolor(danger.pure).setAlpha(0.25).toRgbString(),
+    successBackground: tinycolor(success.bg)
+      .setAlpha(mode === "dark" ? 0.2 : 0.8)
+      .toRgbString(),
+    successBorder: success.pure,
+    successRing: tinycolor(success.pure).setAlpha(0.25).toRgbString(),
+    successText: success.text,
   };
 
-  const defaultVariantTokens = {
-    ...createColoredVariant(neutral, primary),
+  const defaultVariantNormalBackground = neutral.bg;
+  const defaultVariantIsEditingBackground = tinycolor(tertiary.bg)
+    .setAlpha(0.8)
+    .toString();
+
+  const defaultVariantTokens: TextareaVariantTokens = {
+    background: defaultVariantNormalBackground,
     border: neutral.pure,
+    text: baseTextColor,
+    placeholder: basePlaceholderColor,
+    iconColor: baseIconColorDefault,
+    focusBorder: primary.pure,
+    focusRing: tinycolor(primary.pure).setAlpha(0.25).toRgbString(),
     hoverBorder:
       mode === "dark"
         ? tinycolor(neutral.pure).lighten(10).toString()
         : neutral.bgShade,
-    iconColor: mainIconColor,
+    ...commonErrorSuccessStateTokens,
+    disabledBackground: commonDisabledBackground,
+    disabledBorder: commonDisabledBorder,
+    disabledText: commonDisabledText,
+    editingBackground: defaultVariantIsEditingBackground,
+    readOnlyBackground: commonReadOnlyBackground, // Usando la variable corregida
+    readOnlyBorder: commonReadOnlyBorder,
+    readOnlyText: commonReadOnlyText,
+  };
+
+  const createColoredVariant = (
+    variantMainShade: ColorShade,
+    focusShadeInput?: ColorShade
+  ): TextareaVariantTokens => {
+    const effectiveFocusShade = focusShadeInput || variantMainShade;
+    
+    const generalEditingBackgroundForVariants = tinycolor(
+      tertiary.bg ? tertiary.bg : neutral.bg
+    )
+      .setAlpha(mode === "dark" ? 0.3 : 0.5)
+      .toRgbString();
+
+    return {
+      background: variantMainShade.contrastText, 
+      border: variantMainShade.pure,
+      text: baseTextColor,
+      placeholder: basePlaceholderColor,
+      iconColor:
+        mode === "dark"
+          ? tinycolor(variantMainShade.text).setAlpha(0.9).toRgbString()
+          : tinycolor(variantMainShade.pure).setAlpha(0.9).toRgbString(),
+      focusBorder: effectiveFocusShade.pure,
+      focusRing: tinycolor(effectiveFocusShade.pure)
+        .setAlpha(0.25)
+        .toRgbString(),
+      hoverBorder:
+        mode === "dark"
+          ? tinycolor(variantMainShade.pure).lighten(10).toString()
+          : variantMainShade.bgShade,
+      ...commonErrorSuccessStateTokens,
+      disabledBackground: commonDisabledBackground,
+      disabledBorder: commonDisabledBorder,
+      disabledText: commonDisabledText,
+      editingBackground: generalEditingBackgroundForVariants,
+      readOnlyBackground: commonReadOnlyBackground, // Usando la variable corregida
+      readOnlyBorder: commonReadOnlyBorder,
+      readOnlyText: commonReadOnlyText,
+    };
   };
 
   return {
     variants: {
       default: defaultVariantTokens,
-      neutral: createColoredVariant(neutral),
-      white: {
-        ...createColoredVariant(neutral),
-        background: mode === "dark" ? neutral.bg : white.pure,
-        dropdownBackground: mode === "dark" ? neutral.bg : white.pure,
-      },
-      tertiary: createColoredVariant(tertiary),
       primary: createColoredVariant(primary),
       secondary: createColoredVariant(secondary),
-      success: createColoredVariant(success),
-      warning: createColoredVariant(warning),
-      danger: createColoredVariant(danger),
-      info: createColoredVariant(info),
+      tertiary: createColoredVariant(tertiary),
+      accent: createColoredVariant(accent),
+      neutral: createColoredVariant(neutral, neutral),
     },
     sizes: {
       sm: {
         height: "h-auto",
         minHeight: "min-h-[70px]",
-        fontSize: "text-sm",
-        paddingX: "px-3",
+        fontSize: "text-xs",
+        paddingX: "px-2",
         paddingY: "py-1.5",
-        dropdownMaxHeight: "max-h-[200px]",
       },
       md: {
         height: "h-auto",
         minHeight: "min-h-[80px]",
-        fontSize: "text-base",
-        paddingX: "px-4",
+        fontSize: "text-sm",
+        paddingX: "px-3",
         paddingY: "py-2",
-        dropdownMaxHeight: "max-h-[300px]",
       },
       lg: {
         height: "h-auto",
         minHeight: "min-h-[100px]",
-        fontSize: "text-lg",
+        fontSize: "text-base",
         paddingX: "px-4",
-        paddingY: "py-3",
-        dropdownMaxHeight: "max-h-[400px]",
+        paddingY: "py-2.5",
       },
     },
   };

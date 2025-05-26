@@ -112,7 +112,7 @@ export function HomeCards() {
       <ProCard
         variant="secondary"
         border="top"
-        className="overflow-hidden hover:shadow-md transition-shadow duration-300"
+      
         selected={true}
       >
         <ProCard.Header>

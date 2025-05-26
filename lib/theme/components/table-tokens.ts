@@ -148,7 +148,7 @@ export function generateTableTokens(
         "text" in tokenSet &&
         "pure" in tokenSet
       ) {
-        backgroundColor = tokenSet.bg;
+        backgroundColor = tinycolor(tokenSet.bg).toString();
         foregroundColor = tokenSet.text;
         hoverBackgroundColor = tokenSet.bgShade || tokenSet.bg;
         borderColor = tokenSet.pure;
